@@ -150,6 +150,9 @@ function animate() {
     })
     player.draw()
     foreground.draw()
+
+    let moving = true
+    player.moving = false
     
     if(battle.initiated) return
     //activate a battle
@@ -167,18 +170,28 @@ function animate() {
                 rectangle2: battleZone
             }) &&
             overlappingArea > (player.width * player.height) / 2
-            && Math.random() < 0.05
+            && Math.random() < 0.025
         ) {
             console.log('activate battle')
             battle.initiated = true
+            gsap.to('#overlappingDiv', {
+                opacity: 1,
+                repeat: 5,
+                yoyo: true,
+                duration: 0.4,
+                onComplete() {
+                    gsap.to('#overlappingDiv', {
+                        opacity: 1,
+                        duration: 0.4
+                    })
+                }
+            })
             break
             }
         }
     }
 
     //player movement code
-    let moving = true
-    player.moving = false
     if (keys.w.pressed && lastKey === 'w') {
         player.moving = true
         player.image = player.sprites.up
