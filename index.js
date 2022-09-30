@@ -140,7 +140,7 @@ const battle = {
 }
 
 function animate() {
-    window.requestAnimationFrame(animate)
+    const animationId = window.requestAnimationFrame(animate)
     background.draw()
     boundaries.forEach(boundary => {
         boundary.draw()
@@ -173,6 +173,7 @@ function animate() {
             && Math.random() < 0.025
         ) {
             console.log('activate battle')
+            window.cancelAnimationFrame(animationId) //deactive the animation loop
             battle.initiated = true
             gsap.to('#overlappingDiv', {
                 opacity: 1,
@@ -182,7 +183,15 @@ function animate() {
                 onComplete() {
                     gsap.to('#overlappingDiv', {
                         opacity: 1,
-                        duration: 0.4
+                        duration: 0.4,
+                        onComplete() {
+                            //activate a new animation loop
+                            // animateBattle()
+                            gsap.to('#overlappingDiv', {
+                                opacity: 0,
+                                duration: 0.4
+                            })
+                        }
                     })
                 }
             })
@@ -290,6 +299,25 @@ function animate() {
     
 }
 animate()
+
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './images/battleBackground.png'
+
+const battleBackground = new Sprite({
+    position: {
+        x: 0,
+        y: 0
+    },
+    image: battleBackgroundImage
+})
+
+function animateBattle() {
+    window.requestAnimationFrame(animateBattle)
+    battleBackground.draw()
+    console.log(animateBattle)
+}
+
+animateBattle()
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
