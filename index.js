@@ -36,6 +36,18 @@ collisionsMap.forEach((row, i) => {
 
 const battleZones = []
 
+battleZonesMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol === 1025)
+        battleZones.push(
+            new Boundary({
+            position: {
+                x: j * Boundary.width + offset.x,
+                y: i * Boundary.height + offset.y
+        }}))
+    })
+})
+
 c.fillStyle = 'white'
 c.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -112,7 +124,7 @@ const keys = {
 //     }
 // })
 
-const movables = [background, ...boundaries, foreground]
+const movables = [background, ...boundaries, foreground, ...battleZones]
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
     return (
@@ -129,8 +141,32 @@ function animate() {
     boundaries.forEach(boundary => {
         boundary.draw()
     })
+    battleZones.forEach(battleZone => {
+        battleZone.draw()
+    })
     player.draw()
     foreground.draw()
+    
+    if (keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
+        for (let i= 0; i < battleZones.length; i++){
+            const battleZone = battleZones[i]
+            const overlappingArea = 
+                Math.min(player.position.x + player.width, battleZone.position.x + battleZone.width) -
+                Math.max(player.position.x, battleZone.position.x) *
+                Math.min(player.position.y + player.height, battleZone.position.y + battleZone.height) -
+                Math.max(player.position.y, battleZone.position.y)
+
+            if (rectangularCollision({
+                rectangle1: player,
+                rectangle2: battleZone
+            }) &&
+            overlappingArea > player.width * player.height / 2
+        ) {
+            console.log('yup')
+            break
+            }
+        }
+    }
 
     let moving = true
     player.moving = false
@@ -150,11 +186,11 @@ function animate() {
                 }}
             })
         ) {
-                console.log('colliding')
                 moving = false
                 break
             }
         }
+
         if (moving)
         movables.forEach(movable => {
             movable.position.y += 3
@@ -171,10 +207,9 @@ function animate() {
                 rectangle2: {...boundary, position: {
                     x: boundary.position.x + 3,
                     y: boundary.position.y
-                }}
+                }} 
             })
         ) {
-                console.log('colliding')
                 moving = false
                 break
             }
@@ -198,7 +233,6 @@ function animate() {
                 }}
             })
         ) {
-                console.log('colliding')
                 moving = false
                 break
             }
@@ -222,7 +256,6 @@ function animate() {
                 }}
             })
         ) {
-                console.log('colliding')
                 moving = false
                 break
             }
