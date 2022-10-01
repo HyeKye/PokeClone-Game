@@ -56,6 +56,7 @@ function initBattle() {
                             gsap.to('#overlappingDiv', {
                                 opacity: 0
                             })
+                            battle.initiated = false
                         }
                     })
                 })
@@ -73,6 +74,21 @@ function initBattle() {
                 if (emby.health <= 0) {
                     queue.push(() => {
                         emby.faint()
+                    })
+
+                    queue.push(() => {
+                        gsap.to('#overlappingDiv', {
+                            opacity: 1,
+                            onComplete: () => {
+                                cancelAnimationFrame(battleAnimationId)
+                                animate()
+                                document.querySelector('#userInterface').style.display = 'none'
+                                gsap.to('#overlappingDiv', {
+                                    opacity: 0
+                                })
+                                battle.initiated = false
+                            }
+                        })
                     })
                 }
             })
