@@ -57,6 +57,7 @@ function initBattle() {
                                 opacity: 0
                             })
                             battle.initiated = false
+                            audio.Map.play()
                         }
                     })
                 })
@@ -87,6 +88,7 @@ function initBattle() {
                                     opacity: 0
                                 })
                                 battle.initiated = false
+                                audio.Map.play()
                             }
                         })
                     })
@@ -109,6 +111,7 @@ function initBattle() {
 
 function animateBattle() {
     battleAnimationId = window.requestAnimationFrame(animateBattle)
+    console.log(battleBackground)
     battleBackground.draw()
 
     renderedSprites.forEach(sprite => {
@@ -116,8 +119,9 @@ function animateBattle() {
     })
 }
 
-initBattle()
-animateBattle()
+animate()
+// initBattle()
+// animateBattle()
 //our event listeners for our buttons (attacks)
 
 document.querySelector('#dialogueBox').addEventListener('click', (e) => {

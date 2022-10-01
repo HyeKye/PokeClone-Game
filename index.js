@@ -5,13 +5,11 @@ canvas.width = 1024
 canvas.height = 576
 
 const collisionsMap = [];
-
 for (let i = 0; i < collisions.length; i+= 70){
     collisionsMap.push(collisions.slice(i, 70 + i))
 }
 
 const battleZonesMap = [];
-
 for (let i = 0; i < battleZonesData.length; i+= 70){
     battleZonesMap.push(battleZonesData.slice(i, 70 + i))
 }
@@ -127,6 +125,8 @@ const keys = {
 
 const movables = [background, ...boundaries, foreground, ...battleZones]
 
+const renderables = [background, ...boundaries, foreground, ...battleZones, player]
+
 function rectangularCollision({ rectangle1, rectangle2 }) {
     return (
         rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
@@ -142,15 +142,10 @@ const battle = {
 
 function animate() {
     const animationId = window.requestAnimationFrame(animate)
-    background.draw()
-    boundaries.forEach(boundary => {
-        boundary.draw()
-    })
-    battleZones.forEach(battleZone => {
-        battleZone.draw()
-    })
-    player.draw()
-    foreground.draw()
+    renderables.forEach((renderable) => {
+        renderable.draw()
+      })
+    
 
     let moving = true
     player.animate = false
@@ -171,14 +166,18 @@ function animate() {
                 rectangle2: battleZone
             }) &&
             overlappingArea > (player.width * player.height) / 2
-            && Math.random() < 0.025
+            && Math.random() < 0.01
         ) {
-            console.log('activate battle')
             window.cancelAnimationFrame(animationId) //deactive the animation loop
+
+            audio.Map.stop()
+            audio.initBattle.play()
+            audio.battle.play()
+
             battle.initiated = true
             gsap.to('#overlappingDiv', {
                 opacity: 1,
-                repeat: 5,
+                repeat: 6,
                 yoyo: true,
                 duration: 0.4,
                 onComplete() {
@@ -339,4 +338,11 @@ window.addEventListener('keyup', (e) => {
             keys.d.pressed = false
             break
     }
+})
+
+let clicked = false
+addEventListener('keydown', () => {
+    if(!clicked)
+    audio.Map.play()
+    clicked = true
 })
